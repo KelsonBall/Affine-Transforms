@@ -1,11 +1,10 @@
-use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Index };
-use ::vectors;
+use std::ops::{ Index };
 
 pub enum Cell {
-    I1, I2, I3, I4,
-    J1, J2, J3, J4,
-    K1, K2, K3, K4,
-    W1, W2, W3, W4,
+    I1, J1, K1, W1, 
+    I2, J2, K2, W2, 
+    I3, J3, K3, W3, 
+    I4, J4, K4, W4,
     Row(i8),
     Column(i8),
 }
@@ -85,15 +84,15 @@ impl Index<Cell> for AffineMatrix {
             Cell::J1 => &self.j1, Cell::J2 => &self.j2, Cell::J3 => &self.j3, Cell::J4 => &self.j4, 
             Cell::K1 => &self.k1, Cell::K2 => &self.k2, Cell::K3 => &self.k3, Cell::K4 => &self.k4, 
             Cell::W1 => &self.w1, Cell::W2 => &self.w2, Cell::W3 => &self.w3, Cell::W4 => &self.w4,
-            Cell::Column(0) => &self.i1, Cell::Column(1) => &self.i2, Cell::Column(2) => &self.i3, Cell::Column(3) => &self.i4, 
-            Cell::Column(4) => &self.j1, Cell::Column(5) => &self.j2, Cell::Column(6) => &self.j3, Cell::Column(7) => &self.j4, 
-            Cell::Column(8) => &self.k1, Cell::Column(9) => &self.k2, Cell::Column(10) =>&self.k3, Cell::Column(11) =>&self.k4, 
-            Cell::Column(12) =>&self.w1, Cell::Column(13) =>&self.w2, Cell::Column(14) =>&self.w3, Cell::Column(15) =>&self.w4, 
+            Cell::Column(0) => &self.i1, Cell::Column(4) => &self.j1, Cell::Column(8) => &self.k1, Cell::Column(12) => &self.w1,
+            Cell::Column(1) => &self.i2, Cell::Column(5) => &self.j2, Cell::Column(9) => &self.k2, Cell::Column(13) => &self.w2,
+            Cell::Column(2) => &self.i3, Cell::Column(6) => &self.j3, Cell::Column(10) =>&self.k3, Cell::Column(14) => &self.w3,
+            Cell::Column(3) => &self.i4, Cell::Column(7) => &self.j4, Cell::Column(11) =>&self.k4, Cell::Column(15) => &self.w4,
             Cell::Column(_) => panic!("Matrix Index out of bounds"),
-            Cell::Row(0) => &self.i1, Cell::Row(4) => &self.i2, Cell::Row(8) => &self.i3, Cell::Row(12) =>&self.i4, 
-            Cell::Row(1) => &self.j1, Cell::Row(5) => &self.j2, Cell::Row(9) => &self.j3, Cell::Row(13) =>&self.j4, 
-            Cell::Row(2) => &self.k1, Cell::Row(6) => &self.k2, Cell::Row(10) =>&self.k3, Cell::Row(14) =>&self.k4, 
-            Cell::Row(3) => &self.w1, Cell::Row(7) => &self.w2, Cell::Row(11) =>&self.w3, Cell::Row(15) =>&self.w4, 
+            Cell::Row(0) => &self.i1, Cell::Row(1) => &self.j1, Cell::Row(2) => &self.k1, Cell::Row(3) => &self.w1,
+            Cell::Row(4) => &self.i2, Cell::Row(5) => &self.j2, Cell::Row(6) => &self.k2, Cell::Row(7) => &self.w2,
+            Cell::Row(8) => &self.i3, Cell::Row(9) => &self.j3, Cell::Row(10) =>&self.k3, Cell::Row(11) =>&self.w3,
+            Cell::Row(12) =>&self.i4, Cell::Row(13) =>&self.j4, Cell::Row(14) =>&self.k4, Cell::Row(15) =>&self.w4,
             Cell::Row(_) => panic!("Matrix Index out of bounds"), 
         }
     }
