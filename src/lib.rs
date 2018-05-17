@@ -1,2 +1,2 @@
 pub mod vectors;
-mod tests;
+mod vector_op_tests;
