@@ -17,7 +17,7 @@ impl KVector3 {
     }
 
     pub fn magnitude(&self) -> f64 {
-        self.x.mul_add(self.x, self.y.mul_add(self.y, self.z * self.z)).sqrt()
+        self.magnitude_squared().sqrt()
     }  
 
     pub fn new(x : f64, y : f64, z : f64) -> KVector3 {
@@ -128,15 +128,44 @@ pub struct AffineVector {
 
 impl AffineVector {
 
-    pub fn dot(self, v : AffineVector) -> f64 {
-        self.x * v.x + self.y * v.y + self.z * v.z + self.w * v.w    
-    //  self.x.mul_add(v.x, self.y.mul_add(v.y, self.z.mul_add(v.z, self.w * v.w)))
+    pub fn magnitude_squared(&self) -> f64 {        
+        self.x.mul_add(self.x, self.y.mul_add(self.y, self.z.mul_add(self.z, self.w * self.w)))
     }
 
-    pub fn new(x : f64, y : f64, z : f64, w : f64) -> AffineVector { AffineVector { x: x, y: y, z: z, w: w } }
+    pub fn magnitude(&self) -> f64 {
+        self.magnitude_squared().sqrt()
+    }  
+
+    pub fn dot(&self, v: AffineVector) -> f64 {
+    //  self.x * v.x + self.y * v.y + self.z * v.z + self.w * v.w    
+        self.x.mul_add(v.x, self.y.mul_add(v.y, self.z.mul_add(v.z, self.w * v.w)))
+    }
+
+    pub fn new(x: f64, y: f64, z: f64, w: f64) -> AffineVector { AffineVector { x: x, y: y, z: z, w: w } }
 
     pub fn x(self) -> f64 { self.x }
     pub fn y(self) -> f64 { self.y }
     pub fn z(self) -> f64 { self.z }
     pub fn w(self) -> f64 { self.w }
+}
+
+impl Add for AffineVector {
+    type Output = AffineVector;
+    fn add(self, v : AffineVector)  -> AffineVector {
+        AffineVector::new(self.x + v.x, self.y + v.y, self.z + v.z, self.w + v.w)
+    }
+}
+
+impl Sub for AffineVector {
+    type Output = AffineVector;
+    fn sub(self, v : AffineVector) -> AffineVector {
+        AffineVector::new(self.x - v.x, self.y - v.y, self.z - v.z, self.w - v.w)
+    }
+}
+
+impl Neg for AffineVector {
+    type Output = AffineVector;
+    fn neg(self) -> AffineVector {
+        AffineVector::new(-self.x, -self.y, -self.z, -self.w)
+    }
 }

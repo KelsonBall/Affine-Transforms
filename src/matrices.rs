@@ -94,26 +94,55 @@ impl AffineMatrix {
 
     pub fn inverse(&self) -> AffineMatrix {     
         let m = self;   
-        let s0 = m.i1 * m.j2 - m.i2 * m.j1;
-        let s1 = m.i1 * m.k2 - m.i2 * m.k1;
-        let s2 = m.i1 * m.w2 - m.i2 * m.w1;
-        let s3 = m.j1 * m.k2 - m.j2 * m.k1;
-        let s4 = m.j1 * m.w2 - m.j2 * m.w1;
-        let s5 = m.k1 * m.w2 - m.k2 * m.w1;
-        let c5 = m.k3 * m.w4 - m.k4 * m.w3;
-        let c4 = m.j3 * m.w4 - m.j4 * m.w3;
-        let c3 = m.j3 * m.k4 - m.j4 * m.k3;
-        let c2 = m.i3 * m.w4 - m.i4 * m.w3;
-        let c1 = m.i3 * m.k4 - m.i4 * m.k3;
-        let c0 = m.i3 * m.j4 - m.i4 * m.j3;        
+        let s0 = m.i1.mul_add(m.j2, -(m.i2 * m.j1));
+        let s1 = m.i1.mul_add(m.k2, -(m.i2 * m.k1));
+        let s2 = m.i1.mul_add(m.w2, -(m.i2 * m.w1));
+        let s3 = m.j1.mul_add(m.k2, -(m.j2 * m.k1));
+        let s4 = m.j1.mul_add(m.w2, -(m.j2 * m.w1));
+        let s5 = m.k1.mul_add(m.w2, -(m.k2 * m.w1));
+        let c5 = m.k3.mul_add(m.w4, -(m.k4 * m.w3));
+        let c4 = m.j3.mul_add(m.w4, -(m.j4 * m.w3));
+        let c3 = m.j3.mul_add(m.k4, -(m.j4 * m.k3));
+        let c2 = m.i3.mul_add(m.w4, -(m.i4 * m.w3));
+        let c1 = m.i3.mul_add(m.k4, -(m.i4 * m.k3));
+        let c0 = m.i3.mul_add(m.j4, -(m.i4 * m.j3));        
         let d = 1.0 / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
 
         AffineMatrix {
-            i1 : ( m.j2 * c5 - m.k2 * c4 + m.w2 * c3) * d, j1 : (-m.j1 * c5 + m.k1 * c4 - m.w1 * c3) * d, k1 : ( m.j4 * s5 - m.k4 * s4 + m.w4 * s3) * d, w1 : (-m.j3 * s5 + m.k3 * s4 - m.w3 * s3) * d,
-            i2 : (-m.i2 * c5 + m.k2 * c2 - m.w2 * c1) * d, j2 : ( m.i1 * c5 - m.k1 * c2 + m.w1 * c1) * d, k2 : (-m.i4 * s5 + m.k4 * s2 - m.w4 * s1) * d, w2 : ( m.i3 * s5 - m.k3 * s2 + m.w3 * s1) * d,
-            i3 : ( m.i2 * c4 - m.j2 * c2 + m.w2 * c0) * d, j3 : (-m.i1 * c4 + m.j1 * c2 - m.w1 * c0) * d, k3 : ( m.i4 * s4 - m.j4 * s2 + m.w4 * s0) * d, w3 : (-m.i3 * s4 + m.j3 * s2 - m.w3 * s0) * d,
-            i4 : (-m.i2 * c3 + m.j2 * c1 - m.k2 * c0) * d, j4 : ( m.i1 * c3 - m.j1 * c1 + m.k1 * c0) * d, k4 : (-m.i4 * s3 + m.j4 * s1 - m.k4 * s0) * d, w4 : ( m.i3 * s3 - m.j3 * s1 + m.k3 * s0) * d,
+            i1 : ( m.j2 * c5 - m.k2 * c4 + m.w2 * c3) * d, 
+            j1 : (-m.j1 * c5 + m.k1 * c4 - m.w1 * c3) * d, 
+            k1 : ( m.j4 * s5 - m.k4 * s4 + m.w4 * s3) * d, 
+            w1 : (-m.j3 * s5 + m.k3 * s4 - m.w3 * s3) * d,
+            i2 : (-m.i2 * c5 + m.k2 * c2 - m.w2 * c1) * d, 
+            j2 : ( m.i1 * c5 - m.k1 * c2 + m.w1 * c1) * d, 
+            k2 : (-m.i4 * s5 + m.k4 * s2 - m.w4 * s1) * d, 
+            w2 : ( m.i3 * s5 - m.k3 * s2 + m.w3 * s1) * d,
+            i3 : ( m.i2 * c4 - m.j2 * c2 + m.w2 * c0) * d, 
+            j3 : (-m.i1 * c4 + m.j1 * c2 - m.w1 * c0) * d, 
+            k3 : ( m.i4 * s4 - m.j4 * s2 + m.w4 * s0) * d, 
+            w3 : (-m.i3 * s4 + m.j3 * s2 - m.w3 * s0) * d,
+            i4 : (-m.i2 * c3 + m.j2 * c1 - m.k2 * c0) * d, 
+            j4 : ( m.i1 * c3 - m.j1 * c1 + m.k1 * c0) * d, 
+            k4 : (-m.i4 * s3 + m.j4 * s1 - m.k4 * s0) * d, 
+            w4 : ( m.i3 * s3 - m.j3 * s1 + m.k3 * s0) * d,
         }
+        // signs getting flipped when using mul_add for the following
+        //  i1 : ( m.j2.mul_add(c5, -(m.k2.mul_add(c4,   m.w2 * c3)))) * d, 
+        //  j1 : (-m.j1.mul_add(c5,   m.k1.mul_add(c4, -(m.w1 * c3)))) * d, 
+        //  k1 : ( m.j4.mul_add(s5, -(m.k4.mul_add(s4,   m.w4 * s3)))) * d, 
+        //  w1 : (-m.j3.mul_add(s5,   m.k3.mul_add(s4, -(m.w3 * s3)))) * d,
+        //  i2 : (-m.i2.mul_add(c5,   m.k2.mul_add(c2, -(m.w2 * c1)))) * d, 
+        //  j2 : ( m.i1.mul_add(c5, -(m.k1.mul_add(c2,   m.w1 * c1)))) * d, 
+        //  k2 : (-m.i4.mul_add(s5,   m.k4.mul_add(s2, -(m.w4 * s1)))) * d, 
+        //  w2 : ( m.i3.mul_add(s5, -(m.k3.mul_add(s2,   m.w3 * s1)))) * d,
+        //  i3 : ( m.i2.mul_add(c4, -(m.j2.mul_add(c2,   m.w2 * c0)))) * d, 
+        //  j3 : (-m.i1.mul_add(c4,   m.j1.mul_add(c2, -(m.w1 * c0)))) * d, 
+        //  k3 : ( m.i4.mul_add(s4, -(m.j4.mul_add(s2,   m.w4 * s0)))) * d, 
+        //  w3 : (-m.i3.mul_add(s4,   m.j3.mul_add(s2, -(m.w3 * s0)))) * d,
+        //  i4 : (-m.i2.mul_add(c3,   m.j2.mul_add(c1, -(m.k2 * c0)))) * d, 
+        //  j4 : ( m.i1.mul_add(c3, -(m.j1.mul_add(c1,   m.k1 * c0)))) * d, 
+        //  k4 : (-m.i4.mul_add(s3,   m.j4.mul_add(s1, -(m.k4 * s0)))) * d, 
+        //  w4 : ( m.i3.mul_add(s3, -(m.j3.mul_add(s1,   m.k3 * s0)))) * d,
     }
 
     pub fn from_row_major(array : Vec<f64>) -> AffineMatrix {

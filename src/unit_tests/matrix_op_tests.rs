@@ -1,3 +1,5 @@
+
+
 #[cfg(test)]
 mod tests {    
     use ::vectors::{ AffineVector, KVector3 };
@@ -7,11 +9,24 @@ mod tests {
     const C : f64 = 0.5403023058681398; // cos(1)
     const S : f64 = 0.8414709848078965; // sin(1)
 
+    const TOLERANCE : f64 = 0.0000000000000000001;
+
+    macro_rules!  assert_aprox{
+        ( $ left : expr , $ right : expr ) => (
+        {
+            match ( & ( $ left ) , & ( $ right ) ) {
+                ( left_val , right_val ) => {
+                    if ! ( (* left_val - * right_val).magnitude_squared() < TOLERANCE ) { panic!("assertion failed: `(left == right)` (left: `{:?}`, right: `{:?}`)", * left_val , * right_val ) } 
+                } } 
+        } )
+
+    }
+
     #[test]
     fn inverse_affine_identity() {
         let identity = AffineMatrix::new(Primitives::Identity);
         let ident_inverse = identity.inverse();
-        assert_eq!(identity, ident_inverse);
+        assert_eq!(identity, ident_inverse); // should be exact
     }
 
     #[test]
@@ -27,7 +42,7 @@ mod tests {
                  0., 1., 0., 0.,
                  0., 0., 1., 0.,
                  0., 0.,-1., 1.]);
-        assert_eq!(inverse, expected);
+        assert_eq!(inverse, expected); // should be exact
     }
 
     #[test]
@@ -43,13 +58,14 @@ mod tests {
 
         // assert that the result is <cos(1),sin(1),0>
         let expected = KVector3::new(C, S, 0.0);        
-        assert_eq!(rotated, expected);
+        assert_aprox!(rotated, expected);
 
         // use the 'revert' matrix to undo the rotation
         let returned = revert.apply_vec3(rotated);     
 
-        // assert that the result is back to <1,0,0>   
-        assert_eq!(returned, KVector3::i_hat());
+        // assert that the result is back to <1,0,0>, within a tolerance
+        let i = KVector3::i_hat();
+        assert_aprox!(returned, i);        
     }
     
     #[test]
