@@ -160,7 +160,7 @@ impl AffineMatrix {
                 AffineMatrix {
                     i1 : c , j1 : 0., k1 : s , w1 : 0.,
                     i2 : 0., j2 : 1., k2 : 0., w2 : 0.,
-                    i3 : -s, j3 : s , k3 : c , w3 : 0.,
+                    i3 : -s, j3 : 0., k3 : c , w3 : 0.,
                     i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
                 }
             }

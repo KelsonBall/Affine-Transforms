@@ -1,7 +1,6 @@
 #[cfg(test)]
-mod tests {    
-    use ::vectors::{ AffineVector, KVector3 };
-    use ::matrices::{ AffineMatrix, Cell, Primitives };
+mod tests {        
+    use ::matrices::{ AffineMatrix, Cell };
 
     #[test]
     fn row_major_ctor_with_ones() {
@@ -55,19 +54,5 @@ mod tests {
             assert_eq!(matrix[Cell::Column(i)], (i + 1) as f64); // values increment along column major order
             assert_eq!(matrix[Cell::Row(i)], ((i * 4 % 16) + (i / 4) + 1) as f64);
         }
-    }
-
-    #[test]
-    fn inverse_affine_identity() {
-        let identity = AffineMatrix::new(Primitives::Identity);
-        let ident_inverse = identity.inverse();
-        assert_eq!(identity, ident_inverse);
-    }
-
-
-
-    #[test]
-    fn rotation_primitive() {
-        
     }
 }
