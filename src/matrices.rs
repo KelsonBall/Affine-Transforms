@@ -1,12 +1,26 @@
 use std::ops::{ Index };
+use ::vectors::{ AffineVector, KVector3 };
 
 pub enum Cell {
     I1, J1, K1, W1, 
     I2, J2, K2, W2, 
     I3, J3, K3, W3, 
     I4, J4, K4, W4,
-    Row(i8),
-    Column(i8),
+    Row(u8),
+    Column(u8),
+}
+
+impl Cell {
+    pub fn to_column(&self) -> Cell {
+        match self {
+            &Cell::I1 => Cell::Column(0), &Cell::J1 => Cell::Column(4), &Cell::K1 => Cell::Column(8),  &Cell::W1 => Cell::Column(12), 
+            &Cell::I2 => Cell::Column(1), &Cell::J2 => Cell::Column(5), &Cell::K2 => Cell::Column(9),  &Cell::W2 => Cell::Column(13), 
+            &Cell::I3 => Cell::Column(2), &Cell::J3 => Cell::Column(6), &Cell::K3 => Cell::Column(10), &Cell::W3 => Cell::Column(14), 
+            &Cell::I4 => Cell::Column(3), &Cell::J4 => Cell::Column(7), &Cell::K4 => Cell::Column(14), &Cell::W4 => Cell::Column(15), 
+            &Cell::Column(i) => Cell::Column(i),
+            &Cell::Row(i) => Cell::Column((i * 4 % 16) + (i / 4))
+        }
+    }
 }
 
 pub enum Primitives {
@@ -20,6 +34,8 @@ pub enum Primitives {
     UniformScale(f64),
 }
 
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub struct AffineMatrix {
     i1 : f64, j1 : f64, k1 : f64, w1 : f64, 
     i2 : f64, j2 : f64, k2 : f64, w2 : f64, 
@@ -28,6 +44,78 @@ pub struct AffineMatrix {
 }
 
 impl AffineMatrix {
+
+    // column vector (1, 2, 3, 4)
+    pub fn cvec(&self, column : u8) -> AffineVector {
+        let start = (column - 1) * 4;
+        AffineVector::new(
+            self[Cell::Column(start + 0)], 
+            self[Cell::Column(start + 1)], 
+            self[Cell::Column(start + 2)], 
+            self[Cell::Column(start + 3)])
+    }
+
+    // row vector (1, 2, 3, 4)
+    pub fn rvec(&self, row : u8) -> AffineVector {
+        let start = (row - 1) * 4;
+        AffineVector::new(
+            self[Cell::Row(start + 0)], 
+            self[Cell::Row(start + 1)], 
+            self[Cell::Row(start + 2)], 
+            self[Cell::Row(start + 3)])    
+    }
+
+    pub fn multiply(&self, m : AffineMatrix) -> AffineMatrix {
+        let c1 = self.cvec(1);
+        let c2 = self.cvec(2);
+        let c3 = self.cvec(3);
+        let c4 = self.cvec(4);
+        let r1 = m.rvec(1);
+        let r2 = m.rvec(2);
+        let r3 = m.rvec(3);
+        let r4 = m.rvec(4);
+
+        AffineMatrix {
+            i1 : c1.dot(r1), j1: c2.dot(r1), k1: c3.dot(r1), w1: c4.dot(r1),
+            i2 : c1.dot(r2), j2: c2.dot(r2), k2: c3.dot(r2), w2: c4.dot(r2),
+            i3 : c1.dot(r3), j3: c2.dot(r3), k3: c3.dot(r3), w3: c4.dot(r3),
+            i4 : c1.dot(r4), j4: c2.dot(r4), k4: c3.dot(r4), w4: c4.dot(r4),
+        }
+    }
+
+    pub fn apply_affine(&self, a : AffineVector) -> AffineVector {
+        AffineVector::new(self.rvec(1).dot(a),  self.rvec(2).dot(a), self.rvec(3).dot(a), self.rvec(4).dot(a))
+    }
+
+    pub fn apply_vec3(&self, v : KVector3) -> KVector3 {
+        let a = self.apply_affine(AffineVector::new(v.x(), v.y(), v.z(), 1.));
+        KVector3::new(a.x(), a.y(), a.z())
+    }
+
+    pub fn inverse(&self) -> AffineMatrix {     
+        let m = self;   
+        let s0 = m.i1 * m.j2 - m.i2 * m.j1;
+        let s1 = m.i1 * m.k2 - m.i2 * m.k1;
+        let s2 = m.i1 * m.w2 - m.i2 * m.w1;
+        let s3 = m.j1 * m.k2 - m.j2 * m.k1;
+        let s4 = m.j1 * m.w2 - m.j2 * m.w1;
+        let s5 = m.k1 * m.w2 - m.k2 * m.w1;
+        let c5 = m.k3 * m.w4 - m.k4 * m.w3;
+        let c4 = m.j3 * m.w4 - m.j4 * m.w3;
+        let c3 = m.j3 * m.k4 - m.j4 * m.k3;
+        let c2 = m.i3 * m.w4 - m.i4 * m.w3;
+        let c1 = m.i3 * m.k4 - m.i4 * m.k3;
+        let c0 = m.i3 * m.j4 - m.i4 * m.j3;        
+        let d = 1.0 / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
+
+        AffineMatrix {
+            i1 : ( m.j2 * c5 - m.k2 * c4 + m.w2 * c3) * d, j1 : (-m.j1 * c5 + m.k1 * c4 - m.w1 * c3) * d, k1 : ( m.j4 * s5 - m.k4 * s4 + m.w4 * s3) * d, w1 : (-m.j3 * s5 + m.k3 * s4 - m.w3 * s3) * d,
+            i2 : (-m.i2 * c5 + m.k2 * c2 - m.w2 * c1) * d, j2 : ( m.i1 * c5 - m.k1 * c2 + m.w1 * c1) * d, k2 : (-m.i4 * s5 + m.k4 * s2 - m.w4 * s1) * d, w2 : ( m.i3 * s5 - m.k3 * s2 + m.w3 * s1) * d,
+            i3 : ( m.i2 * c4 - m.j2 * c2 + m.w2 * c0) * d, j3 : (-m.i1 * c4 + m.j1 * c2 - m.w1 * c0) * d, k3 : ( m.i4 * s4 - m.j4 * s2 + m.w4 * s0) * d, w3 : (-m.i3 * s4 + m.j3 * s2 - m.w3 * s0) * d,
+            i4 : (-m.i2 * c3 + m.j2 * c1 - m.k2 * c0) * d, j4 : ( m.i1 * c3 - m.j1 * c1 + m.k1 * c0) * d, k4 : (-m.i4 * s3 + m.j4 * s1 - m.k4 * s0) * d, w4 : ( m.i3 * s3 - m.j3 * s1 + m.k3 * s0) * d,
+        }
+    }
+
     pub fn from_row_major(array : Vec<f64>) -> AffineMatrix {
         AffineMatrix {
             i1 : array[0], j1 : array[1], k1 : array[2], w1 : array[3],
@@ -55,26 +143,42 @@ impl AffineMatrix {
                 i3 : 0., j3 : 0., k3 : 1., w3 : 0.,
                 i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
             },
-            Primitives::Translation(x,y,z) => panic!("Not implemented"),
-            Primitives::RotationX(theta) => panic!("Not implemented"),
-            Primitives::RotationY(theta) => panic!("Not implemented"),
-            Primitives::RotationZ(theta) => panic!("Not implemented"),
-            Primitives::Scale(x,y,z) => panic!("Not implemented"),
-            Primitives::UniformScale(s) => panic!("Not implemented"),
+            Primitives::Translation(_x,_y,_z) => panic!("Not implemented"),
+            Primitives::RotationX(theta) => {
+                let c = theta.cos();
+                let s = theta.sin();
+                AffineMatrix {
+                    i1 : 1., j1 : 0., k1 : 0., w1 : 0.,
+                    i2 : 0., j2 : c , k2 : -s, w2 : 0.,
+                    i3 : 0., j3 : s , k3 : c , w3 : 0.,
+                    i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
+                }
+            }
+            Primitives::RotationY(theta) => {
+                let c = theta.cos();
+                let s = theta.sin();
+                AffineMatrix {
+                    i1 : c , j1 : 0., k1 : s , w1 : 0.,
+                    i2 : 0., j2 : 1., k2 : 0., w2 : 0.,
+                    i3 : -s, j3 : s , k3 : c , w3 : 0.,
+                    i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
+                }
+            }
+            Primitives::RotationZ(theta) => {
+                let c = theta.cos();
+                let s = theta.sin();
+                AffineMatrix {
+                    i1 : c , j1 : -s, k1 : 0., w1 : 0.,
+                    i2 : s , j2 : c , k2 : 0., w2 : 0.,
+                    i3 : 0., j3 : 0., k3 : 1., w3 : 0.,
+                    i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
+                }
+            }
+            Primitives::Scale(_x,_y,_z) => panic!("Not implemented"),
+            Primitives::UniformScale(_s) => panic!("Not implemented"),
         }
     }
 }
-// pub trait Matrix4 {
-//     fn column_major(&self) -> Vec<f64>;
-//     fn row_major(&self) -> Vec<f64>;
-
-//     fn add(&self, m : Matrix4) -> Matrix4;
-//     fn sub(&self, m : Matrix4) -> Matrix4;
-//     fn sub(&self) -> Matrix4;
-//     fn mult(&self, m : Matrix4) -> Matrix4;
-//     fn mult(&self, v : Vector3) -> Matrix4;
-//     fn inverse()
-// }
 
 impl Index<Cell> for AffineMatrix {
     type Output = f64;

@@ -109,3 +109,29 @@ impl Neg for KVector3 {
         self.v_usub()
     }
 }
+
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Clone)]
+#[derive(Copy)]
+pub struct AffineVector {
+    x : f64,
+    y : f64,
+    z : f64,
+    w : f64,
+}
+
+impl AffineVector {
+
+    pub fn dot(self, v : AffineVector) -> f64 {
+        self.x * v.x + self.y * v.y + self.z * v.z + self.w * v.w
+    }
+
+    pub fn new(x : f64, y : f64, z : f64, w : f64) -> AffineVector { AffineVector { x: x, y: y, z: z, w: w } }
+
+    pub fn x(self) -> f64 { self.x }
+    pub fn y(self) -> f64 { self.y }
+    pub fn z(self) -> f64 { self.z }
+    pub fn w(self) -> f64 { self.w }
+}
