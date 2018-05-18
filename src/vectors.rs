@@ -11,6 +11,15 @@ pub struct KVector3{
 }
 
 impl KVector3 {
+
+    pub fn magnitude_squared(self) -> f64 {
+        self.x * self.x + self.y * self.y + self.z * self.z
+    }
+
+    pub fn magnitude(self) -> f64 {
+        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+    }  
+
     pub fn new(x : f64, y : f64, z : f64) -> KVector3 {
         KVector3 { x: x, y: y, z: z }
     }
@@ -18,49 +27,12 @@ impl KVector3 {
     pub fn newi(x : i32, y : i32, z : i32) -> KVector3 {
         KVector3 { x: x as f64, y: y as f64, z: z as f64 }
     }
-}
 
-pub trait Vector {
-    fn magnitude_squared(self) -> f64;
-    fn magnitude(self) -> f64;        
-}
-
-pub trait Vector3 {
-    fn dot(self, v : KVector3) -> f64;
-    fn cross(self, v : KVector3) -> KVector3;
-    fn unit(self) -> KVector3;
-
-    fn v_add(self, v : KVector3) -> KVector3;
-    fn v_usub(self) -> KVector3;
-    fn v_sub(self, v : KVector3) -> KVector3;
-    fn scale(self, s : f64) -> KVector3;
-
-    fn zero() -> KVector3;
-    fn i_hat() -> KVector3;
-    fn j_hat() -> KVector3;
-    fn k_hat() -> KVector3;
-
-    fn x(self) -> f64;
-    fn y(self) -> f64;
-    fn z(self) -> f64;
-}
-
-impl Vector for KVector3 {
-    fn magnitude_squared(self) -> f64 {
-        self.x * self.x + self.y * self.y + self.z * self.z
-    }
-
-    fn magnitude(self) -> f64 {
-        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
-    }    
-}
-
-impl Vector3 for KVector3 {
-    fn dot(self, v : KVector3) -> f64 {
+    pub fn dot(self, v : KVector3) -> f64 {
         self.x * v.x + self.y * v.y + self.z + v.z
     }
 
-    fn cross(self, v : KVector3) -> KVector3 {
+    pub fn cross(self, v : KVector3) -> KVector3 {
         KVector3 {
             x : self.y * v.z - self.z * v.y,
             y : self.z * v.x - self.x * v.z,
@@ -68,37 +40,39 @@ impl Vector3 for KVector3 {
         }
     }
 
-    fn unit(self) -> KVector3 {
+    pub fn unit(self) -> KVector3 {
         self.scale(1.0 / self.magnitude())
     }
 
-    fn v_add(self, v : KVector3) -> KVector3 {
+    pub fn v_add(self, v : KVector3) -> KVector3 {
         KVector3 { x : self.x + v.x, y : self.y + v.y, z : self.z + v.z }
     }
 
-    fn v_usub(self) -> KVector3 {
+    pub fn v_usub(self) -> KVector3 {
         KVector3 { x : -self.x, y : -self.y, z : -self.z }
     }
 
-    fn v_sub(self, v : KVector3) -> KVector3 {
+    pub fn v_sub(self, v : KVector3) -> KVector3 {
         KVector3 { x : self.x - v.x, y : self.y - v.y, z : self.z - v.z }
     }
 
-    fn scale(self, s : f64) -> KVector3 {
+    pub fn scale(self, s : f64) -> KVector3 {
         KVector3 { x : self.x * s, y : self.y * s, z : self.z * s }
     }
 
-    fn  zero() -> KVector3 { KVector3 { x: 0., y: 0., z: 0. } }
+    pub fn x(self) -> f64 { self.x }
+    pub fn y(self) -> f64 { self.y }
+    pub fn z(self) -> f64 { self.z }
 
-    fn i_hat() -> KVector3 { KVector3 { x: 1., y: 0., z: 0. } }
+    pub fn  zero() -> KVector3 { KVector3 { x: 0., y: 0., z: 0. } }
+    pub fn identity() -> KVector3 { KVector3 { x: 1., y: 1., z: 1. } }
+    pub fn i_hat() -> KVector3 { KVector3 { x: 1., y: 0., z: 0. } }
+    pub fn j_hat() -> KVector3 { KVector3 { x: 0., y: 1., z: 0. } }
+    pub fn k_hat() -> KVector3 { KVector3 { x: 0., y: 0., z: 1. } }
 
-    fn j_hat() -> KVector3 { KVector3 { x: 0., y: 1., z: 0. } }
-
-    fn k_hat() -> KVector3 { KVector3 { x: 0., y: 0., z: 1. } }
-
-    fn x(self) -> f64 { self.x }
-    fn y(self) -> f64 { self.y }
-    fn z(self) -> f64 { self.z }
+    pub fn with_x(self, x : f64) -> KVector3 { KVector3 { x: x, y: self.y, z: self.z } }
+    pub fn with_y(self, y : f64) -> KVector3 { KVector3 { x: self.x, y: y, z: self.z } }
+    pub fn with_z(self, z : f64) -> KVector3 { KVector3 { x: self.x, y: self.y, z: z } }
 }
 
 impl Add for KVector3 {

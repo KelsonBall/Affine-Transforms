@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {    
     
-    use ::vectors::{Vector, Vector3, KVector3};
+    use ::vectors::KVector3;
 
     #[test]
     fn unit_magnitude_squared() {
