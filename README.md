@@ -15,6 +15,7 @@ Instead of abstracting the snot out of everything in my tests, each test represe
 There are a couple of design goals I have with this project:
 
  1. Everything is immutable (for example, multiplying one vector by another always gives you a new vector)
+    * I'm looking at you, [PVector](https://processing.org/reference/PVector.html)
  2. Everything is 3D. If you want 2D - use the XY plane.
     * It's super easy to go from 2D to 3D is you were secretly already in 3D!
  3. Specific. This is a 3D linear transforms library, not a linear algebra library
