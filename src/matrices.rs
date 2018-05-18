@@ -1,4 +1,4 @@
-use std::ops::{ Index };
+use std::ops::{ Index, Mul };
 use ::vectors::{ AffineVector, KVector3 };
 
 pub enum Cell {
@@ -172,7 +172,12 @@ impl AffineMatrix {
                 i3 : 0., j3 : 0., k3 : 1., w3 : 0.,
                 i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
             },
-            Primitives::Translation(_x,_y,_z) => panic!("Not implemented"),
+            Primitives::Translation(x,y,z) =>AffineMatrix {
+                i1 : 1., j1 : 0., k1 : 0., w1 : x ,
+                i2 : 0., j2 : 1., k2 : 0., w2 : y ,
+                i3 : 0., j3 : 0., k3 : 1., w3 : z ,
+                i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
+            },
             Primitives::RotationX(theta) => {
                 let c = theta.cos();
                 let s = theta.sin();
@@ -203,8 +208,18 @@ impl AffineMatrix {
                     i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
                 }
             }
-            Primitives::Scale(_x,_y,_z) => panic!("Not implemented"),
-            Primitives::UniformScale(_s) => panic!("Not implemented"),
+            Primitives::Scale(x,y,z) => AffineMatrix {
+                i1 : x , j1 : 0., k1 : 0., w1 : 0.,
+                i2 : 0., j2 : y , k2 : 0., w2 : 0.,
+                i3 : 0., j3 : 0., k3 : z , w3 : 0.,
+                i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
+            },
+            Primitives::UniformScale(s) => AffineMatrix {
+                i1 : s , j1 : 0., k1 : 0., w1 : 0.,
+                i2 : 0., j2 : s , k2 : 0., w2 : 0.,
+                i3 : 0., j3 : 0., k3 : s , w3 : 0.,
+                i4 : 0., j4 : 0., k4 : 0., w4 : 1.,
+            },
         }
     }
 }
@@ -228,5 +243,12 @@ impl Index<Cell> for AffineMatrix {
             Cell::Row(12) =>&self.i4, Cell::Row(13) =>&self.j4, Cell::Row(14) =>&self.k4, Cell::Row(15) =>&self.w4,
             Cell::Row(_) => panic!("Matrix Index out of bounds"), 
         }
+    }
+}
+
+impl Mul for AffineMatrix {
+    type Output = AffineMatrix;
+    fn mul(self, m : AffineMatrix)  -> AffineMatrix {
+        self.multiply(m)
     }
 }
