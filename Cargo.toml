@@ -3,7 +3,7 @@ name = "affine_transforms"
 version = "0.1.0"
 authors = ["Kelson Ball <business.kelsonball@gmail.com>"]
 description = "(Pre Release Package) Does linear transformations in R3"
-readme = "https://github.com/KelsonBall/Affine-Transforms/blob/master/README.md"
+readme = "README.md"
 license = "MIT"
 repository = "https://github.com/KelsonBall/Affine-Transforms"
 
