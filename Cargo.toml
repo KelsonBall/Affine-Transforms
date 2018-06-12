@@ -1,6 +1,6 @@
 [package]
 name = "affine_transforms"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Kelson Ball <business.kelsonball@gmail.com>"]
 description = "(Pre Release Package) Does linear transformations in R3"
 readme = "README.md"
