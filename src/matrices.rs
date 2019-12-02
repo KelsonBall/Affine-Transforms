@@ -1,7 +1,8 @@
 use std::ops::{ Index, Mul };
-use ::vectors::{ AffineVector, Vector };
+use ::vectors::{ Vector4, Vector3 };
 
-pub enum Cell {
+pub enum Cell 
+{
     I1, J1, K1, W1, 
     I2, J2, K2, W2, 
     I3, J3, K3, W3, 
@@ -10,8 +11,10 @@ pub enum Cell {
     Column(u8),
 }
 
-impl Cell {
-    pub fn to_column(&self) -> Cell {
+impl Cell 
+{
+    pub fn to_column(&self) -> Cell 
+    {
         match self {
             &Cell::I1 => Cell::Column(0), &Cell::J1 => Cell::Column(4), &Cell::K1 => Cell::Column(8),  &Cell::W1 => Cell::Column(12), 
             &Cell::I2 => Cell::Column(1), &Cell::J2 => Cell::Column(5), &Cell::K2 => Cell::Column(9),  &Cell::W2 => Cell::Column(13), 
@@ -25,19 +28,21 @@ impl Cell {
 
 #[derive(Debug)]
 #[derive(PartialEq)]
-pub struct AffineMatrix {
+pub struct AffineMatrix 
+{
     i1 : f64, j1 : f64, k1 : f64, w1 : f64, 
     i2 : f64, j2 : f64, k2 : f64, w2 : f64, 
     i3 : f64, j3 : f64, k3 : f64, w3 : f64, 
     i4 : f64, j4 : f64, k4 : f64, w4 : f64
 }
 
-impl AffineMatrix {
-
+impl AffineMatrix 
+{
     // column vector (1, 2, 3, 4)
-    pub fn cvec(&self, column : u8) -> AffineVector {
+    pub fn cvec(&self, column : u8) -> Vector4 
+    {
         let start = (column - 1) * 4;
-        AffineVector::new(
+        Vector4::new(
             self[Cell::Column(start + 0)], 
             self[Cell::Column(start + 1)], 
             self[Cell::Column(start + 2)], 
@@ -45,16 +50,18 @@ impl AffineMatrix {
     }
 
     // row vector (1, 2, 3, 4)
-    pub fn rvec(&self, row : u8) -> AffineVector {
+    pub fn rvec(&self, row : u8) -> Vector4 
+    {
         let start = (row - 1) * 4;
-        AffineVector::new(
+        Vector4::new(
             self[Cell::Row(start + 0)], 
             self[Cell::Row(start + 1)], 
             self[Cell::Row(start + 2)], 
             self[Cell::Row(start + 3)])    
     }
 
-    pub fn multiply(&self, m : AffineMatrix) -> AffineMatrix {
+    pub fn multiply(&self, m : AffineMatrix) -> AffineMatrix 
+    {
         let c1 = self.cvec(1);
         let c2 = self.cvec(2);
         let c3 = self.cvec(3);
@@ -72,16 +79,19 @@ impl AffineMatrix {
         }
     }
 
-    pub fn apply_affine(&self, a : AffineVector) -> AffineVector {
-        AffineVector::new(self.rvec(1).dot(a),  self.rvec(2).dot(a), self.rvec(3).dot(a), self.rvec(4).dot(a))
+    pub fn apply_affine(&self, a : Vector4) -> Vector4 
+    {
+        Vector4::new(self.rvec(1).dot(a),  self.rvec(2).dot(a), self.rvec(3).dot(a), self.rvec(4).dot(a))
     }
 
-    pub fn apply_vec3(&self, v : Vector) -> Vector {
-        let a = self.apply_affine(AffineVector::new(v.x(), v.y(), v.z(), 1.));
-        Vector::new(a.x(), a.y(), a.z())
+    pub fn apply_vec3(&self, v : Vector3) -> Vector3 
+    {
+        let a = self.apply_affine(Vector4::new(v.x(), v.y(), v.z(), 1.));
+        Vector3::new(a.x(), a.y(), a.z())
     }
 
-    pub fn inverse(&self) -> AffineMatrix {     
+    pub fn inverse(&self) -> AffineMatrix 
+    {     
         let m = self;   
         let s0 = m.i1 * m.j2 - m.i2 * m.j1;
         let s1 = m.i1 * m.k2 - m.i2 * m.k1;
@@ -117,7 +127,8 @@ impl AffineMatrix {
         }
     }
 
-    pub fn from_row_major(array : Vec<f64>) -> AffineMatrix {
+    pub fn from_row_major(array : Vec<f64>) -> AffineMatrix 
+    {
         AffineMatrix {
             i1: array[0], j1: array[1], k1: array[2], w1: array[3],
             i2: array[4], j2: array[5], k2: array[6], w2: array[7],
@@ -126,7 +137,8 @@ impl AffineMatrix {
         }
     }
 
-    pub fn from_column_major(array : Vec<f64>) -> AffineMatrix {
+    pub fn from_column_major(array : Vec<f64>) -> AffineMatrix 
+    {
         AffineMatrix {
             i1: array[0], j1: array[4], k1: array[8], w1: array[12],
             i2: array[1], j2: array[5], k2: array[9], w2: array[13],
@@ -135,11 +147,13 @@ impl AffineMatrix {
         }
     }
 
-    pub fn Zero() -> AffineMatrix {
+    pub fn zero() -> AffineMatrix 
+    {
         AffineMatrix::from_row_major(vec![0.0;16])
     }
 
-    pub fn Identity() -> AffineMatrix {
+    pub fn identity() -> AffineMatrix 
+    {
         AffineMatrix {
             i1: 1., j1: 0., k1: 0., w1: 0.,
             i2: 0., j2: 1., k2: 0., w2: 0.,
@@ -148,7 +162,8 @@ impl AffineMatrix {
         }
     }
             
-    pub fn Translation(x : f64, y : f64, z : f64) -> AffineMatrix {
+    pub fn translation(x : f64, y : f64, z : f64) -> AffineMatrix 
+    {
         AffineMatrix {
                 i1: 1., j1: 0., k1: 0., w1: x ,
                 i2: 0., j2: 1., k2: 0., w2: y ,
@@ -157,7 +172,8 @@ impl AffineMatrix {
             }
     }
     
-    pub fn RotationX(theta : f64) -> AffineMatrix {
+    pub fn rotation_x(theta : f64) -> AffineMatrix 
+    {
         let c = theta.cos();
         let s = theta.sin();
         AffineMatrix {
@@ -168,7 +184,8 @@ impl AffineMatrix {
         }
     }
     
-    pub fn RotationY(theta : f64) -> AffineMatrix {
+    pub fn rotation_y(theta : f64) -> AffineMatrix 
+    {
         let c = theta.cos();
         let s = theta.sin();
         AffineMatrix {
@@ -179,7 +196,8 @@ impl AffineMatrix {
         }
     }
 
-    pub fn RotationZ(theta : f64) -> AffineMatrix {
+    pub fn rotation_z(theta : f64) -> AffineMatrix 
+    {
         let c = theta.cos();
         let s = theta.sin();
         AffineMatrix {
@@ -190,7 +208,8 @@ impl AffineMatrix {
         }
     }
 
-    pub fn Scale(x : f64, y : f64, z : f64) -> AffineMatrix {
+    pub fn scale(x : f64, y : f64, z : f64) -> AffineMatrix 
+    {
         AffineMatrix {
             i1: x , j1: 0., k1: 0., w1: 0.,
             i2: 0., j2: y , k2: 0., w2: 0.,
@@ -199,7 +218,8 @@ impl AffineMatrix {
         }
     }
     
-    pub fn UniformScale(s : f64) -> AffineMatrix {
+    pub fn uniform_scale(s : f64) -> AffineMatrix 
+    {
         AffineMatrix {
             i1: s , j1: 0., k1: 0., w1: 0.,
             i2: 0., j2: s , k2: 0., w2: 0.,
@@ -208,7 +228,8 @@ impl AffineMatrix {
         }        
     }
 
-    pub fn transpose(&self) -> AffineMatrix {
+    pub fn transpose(&self) -> AffineMatrix 
+    {
         AffineMatrix {
             i1: self.i1, j1: self.i2, k1: self.i3, w1: self.i4, 
             i2: self.j1, j2: self.j2, k2: self.j3, w2: self.j4, 
@@ -217,7 +238,8 @@ impl AffineMatrix {
         }
     }
 
-    pub fn as_row_major_vec(&self) -> Vec<f64> {
+    pub fn as_row_major_vec(&self) -> Vec<f64> 
+    {
         vec![
             self.i1, self.j1, self.k1, self.w1,
             self.i2, self.j2, self.k2, self.w2,
@@ -227,9 +249,11 @@ impl AffineMatrix {
     }
 }
 
-impl Index<Cell> for AffineMatrix {
+impl Index<Cell> for AffineMatrix 
+{
     type Output = f64;
-    fn index(&self, c : Cell) -> &f64 {
+    fn index(&self, c : Cell) -> &f64 
+    {
         match c {
             Cell::I1 => &self.i1, Cell::I2 => &self.i2, Cell::I3 => &self.i3, Cell::I4 => &self.i4, 
             Cell::J1 => &self.j1, Cell::J2 => &self.j2, Cell::J3 => &self.j3, Cell::J4 => &self.j4, 
@@ -249,7 +273,8 @@ impl Index<Cell> for AffineMatrix {
     }
 }
 
-impl Index<i32> for AffineMatrix {
+impl Index<i32> for AffineMatrix 
+{
     type Output = f64;
     fn index(&self, c : i32) -> &f64 {
         match c {
@@ -262,23 +287,224 @@ impl Index<i32> for AffineMatrix {
     }
 }
 
-impl Mul for AffineMatrix {
+impl Mul for AffineMatrix 
+{
     type Output = AffineMatrix;
     fn mul(self, m : AffineMatrix)  -> AffineMatrix {
         self.multiply(m)
     }
 }
 
-impl Mul<Vector> for AffineMatrix {
-    type Output = Vector;
-    fn mul(self, v : Vector) -> Vector {
+impl Mul<Vector3> for AffineMatrix 
+{
+    type Output = Vector3;
+    fn mul(self, v : Vector3) -> Vector3 {
         self.apply_vec3(v)
     }
 }
 
-impl Mul<AffineVector> for AffineMatrix {
-    type Output = AffineVector;
-    fn mul(self, v : AffineVector) -> AffineVector {
+impl Mul<Vector4> for AffineMatrix 
+{
+    type Output = Vector4;
+    fn mul(self, v : Vector4) -> Vector4 {
         self.apply_affine(v)
+    }
+}
+
+#[cfg(test)]
+mod tests {    
+    use ::vectors::{ Vector4, Vector3 };
+    use ::matrices::{ AffineMatrix, Cell };
+    use std::f64::consts::{ PI };
+
+    const C : f64 = 0.5403023058681398; // cos(1)
+    const S : f64 = 0.8414709848078965; // sin(1)
+
+    const TOLERANCE : f64 = 0.0000000000000000001;
+
+    macro_rules!  assert_aprox{
+        ( $ left : expr , $ right : expr ) => (
+        {
+            match ( & ( $ left ) , & ( $ right ) ) {
+                ( left_val , right_val ) => {
+                    if ! ( (* left_val - * right_val).magnitude_squared() < TOLERANCE ) { panic!("assertion failed: `(left == right)` (left: `{:?}`, right: `{:?}`)", * left_val , * right_val ) } 
+                } } 
+        } )
+    }
+
+    #[test]
+    fn inverse_affine_identity() {
+        let identity = AffineMatrix::identity();
+        let ident_inverse = identity.inverse();
+        assert_eq!(identity, ident_inverse); // should be exact
+    }
+
+    #[test]
+    fn inverse_perspective() {
+        let perspective = AffineMatrix::from_row_major(
+            vec![1., 0., 0., 0.,
+                 0., 1., 0., 0.,
+                 0., 0., 1., 0.,
+                 0., 0., 1., 1.]);
+        let inverse = perspective.inverse();
+        let expected = AffineMatrix::from_row_major(
+            vec![1., 0., 0., 0.,
+                 0., 1., 0., 0.,
+                 0., 0., 1., 0.,
+                 0., 0.,-1., 1.]);
+        assert_eq!(inverse, expected); // should be exact
+    }
+
+    #[test]
+    fn inverse_rotation() {
+        // create a rotation Matrix for 1 radian about the Z axis
+        let rotate = AffineMatrix::rotation_z(1.);
+
+        // create a Matrix that undoes the rotation of 'rotate'
+        let revert = rotate.inverse();
+
+        // apply the transformation to the vector <1,0,0>
+        let rotated = rotate.apply_vec3(Vector3::i_hat());        
+
+        // assert that the result is <cos(1),sin(1),0>
+        let expected = Vector3::new(C, S, 0.0);        
+        assert_aprox!(rotated, expected);
+
+        // use the 'revert' Matrix to undo the rotation
+        let returned = revert.apply_vec3(rotated);     
+
+        // assert that the result is back to <1,0,0>, within a tolerance
+        let i = Vector3::i_hat();
+        assert_aprox!(returned, i);        
+    }
+    
+    #[test]
+    fn rotation_z_matrix() {
+        // create a rotation Matrix for 1 radian about the Z axis
+        let rotate = AffineMatrix::rotation_z(1.);
+
+        assert_eq!(rotate.rvec(1), Vector4::new( C ,-S , 0., 0.));
+        assert_eq!(rotate.rvec(2), Vector4::new( S , C , 0., 0.));
+        assert_eq!(rotate.rvec(3), Vector4::new( 0., 0., 1., 0.));
+        assert_eq!(rotate.rvec(4), Vector4::new( 0., 0., 0., 1.));
+    }
+
+    #[test]
+    fn rotation_y_matrix() {
+        // create a rotation Matrix for 1 radian about the Y axis
+        let rotate = AffineMatrix::rotation_y(1.);
+
+        assert_eq!(rotate.rvec(1), Vector4::new( C , 0. , S ,  0.));
+        assert_eq!(rotate.rvec(2), Vector4::new( 0., 1. , 0.,  0.));
+        assert_eq!(rotate.rvec(3), Vector4::new(-S , 0. , C ,  0.));
+        assert_eq!(rotate.rvec(4), Vector4::new( 0., 0. , 0.,  1.));
+    }
+
+    #[test]
+    fn rotation_x_matrix() {
+        // create a rotation Matrix for 1 radian about the X axis
+        let rotate = AffineMatrix::rotation_x(1.);
+
+        assert_eq!(rotate.rvec(1), Vector4::new( 1., 0., 0.,  0.));
+        assert_eq!(rotate.rvec(2), Vector4::new( 0., C ,-S ,  0.));
+        assert_eq!(rotate.rvec(3), Vector4::new( 0., S , C ,  0.));
+        assert_eq!(rotate.rvec(4), Vector4::new( 0., 0., 0.,  1.));
+    }
+
+    #[test]
+    fn rotation_axis_tour() {
+        // start at x axis
+        let i = Vector3::i_hat();
+
+        // rotate <1,0,0> 1/4 turn about the z axis to get <0,1,0>
+        let j = AffineMatrix::rotation_z(PI / 2.0).apply_vec3(i).round();
+        assert_eq!(j, Vector3::j_hat());
+
+        // rotate <0,1,0> 1/4 turn about the x axis to get <0,0,1>
+        let k = AffineMatrix::rotation_x(PI / 2.0).apply_vec3(j).round();
+        assert_eq!(k, Vector3::k_hat());
+
+        // rotate <0,0,1> 1/4 turn about the y axis to get <1,0,0>
+        let i2 = AffineMatrix::rotation_y(PI / 2.0).apply_vec3(k).round();
+        assert_eq!(i, i2);
+    }
+
+    #[test]
+    fn translate() {
+        // start at <1,0,0>
+        let i = Vector3::i_hat();
+
+        // move 'left' 1 unit and 'up' 1 unit
+        let t = AffineMatrix::translation(-1., 1., 0.);
+
+        let should_be_j = t.apply_vec3(i);
+
+        assert_aprox!(should_be_j, Vector3::j_hat());
+    }
+
+    #[test]
+    fn primitives_multiply_as_matrices() {
+
+        let i = Vector3::i_hat();
+
+        let t = AffineMatrix::rotation_z(PI / 2.0) * AffineMatrix::uniform_scale(2.0);
+
+        let should_be_2j = t * i;
+
+        assert_aprox!(should_be_2j, Vector3::j_hat() * 2.0);
+    }
+
+    #[test]
+    fn row_major_ctor_with_ones() {
+        let mut v = vec![1.;14];
+        v.push(0.);
+        v.push(2.);
+        let matrix = AffineMatrix::from_row_major(v);
+        for i in 0..14 {
+            assert_eq!(matrix[Cell::Row(i)], 1.);            
+        }
+        assert_eq!(matrix[Cell::Row(14)], 0.);
+        assert_eq!(matrix[Cell::Row(15)], 2.);
+    }
+
+    #[test]
+    fn row_major_ctor_with_incrementing() {
+        let matrix = AffineMatrix::from_row_major(
+            vec![1., 2., 3., 4.,
+                 5., 6., 7., 8.,
+                 9.,10.,11.,12.,
+                 13.,14.,15.,16.]);
+
+        for i in 0..16 {
+            assert_eq!(matrix[Cell::Row(i)], (i + 1) as f64); // values increment along row major order
+            assert_eq!(matrix[Cell::Column(i)], ((i * 4 % 16) + (i / 4) + 1) as f64);
+        }
+    }
+
+    #[test]
+    fn column_major_ctor_with_ones() {
+        let mut v = vec![1.;14];
+        v.push(0.);
+        v.push(2.);
+        let matrix = AffineMatrix::from_column_major(v);
+        for i in 0..14 {
+            assert_eq!(matrix[Cell::Column(i)], 1.);            
+        }
+        assert_eq!(matrix[Cell::Column(14)], 0.);
+        assert_eq!(matrix[Cell::Column(15)], 2.);
+    }
+
+    #[test]
+    fn column_major_ctor_with_incrementing() {
+        let matrix = AffineMatrix::from_column_major(
+            vec![1., 2., 3., 4.,
+                 5., 6., 7., 8.,
+                 9.,10.,11.,12.,
+                 13.,14.,15.,16.]);
+
+        for i in 0..16 {
+            assert_eq!(matrix[Cell::Column(i)], (i + 1) as f64); // values increment along column major order
+            assert_eq!(matrix[Cell::Row(i)], ((i * 4 % 16) + (i / 4) + 1) as f64);
+        }
     }
 }
