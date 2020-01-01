@@ -30,10 +30,10 @@ impl Cell
 #[derive(PartialEq)]
 pub struct AffineMatrix 
 {
-    i1 : f64, j1 : f64, k1 : f64, w1 : f64, 
-    i2 : f64, j2 : f64, k2 : f64, w2 : f64, 
-    i3 : f64, j3 : f64, k3 : f64, w3 : f64, 
-    i4 : f64, j4 : f64, k4 : f64, w4 : f64
+    i1 : f32, j1 : f32, k1 : f32, w1 : f32, 
+    i2 : f32, j2 : f32, k2 : f32, w2 : f32, 
+    i3 : f32, j3 : f32, k3 : f32, w3 : f32, 
+    i4 : f32, j4 : f32, k4 : f32, w4 : f32
 }
 
 impl AffineMatrix 
@@ -127,7 +127,7 @@ impl AffineMatrix
         }
     }
 
-    pub fn from_row_major(array : Vec<f64>) -> AffineMatrix 
+    pub fn from_row_major(array : Vec<f32>) -> AffineMatrix 
     {
         AffineMatrix {
             i1: array[0], j1: array[1], k1: array[2], w1: array[3],
@@ -137,7 +137,7 @@ impl AffineMatrix
         }
     }
 
-    pub fn from_column_major(array : Vec<f64>) -> AffineMatrix 
+    pub fn from_column_major(array : Vec<f32>) -> AffineMatrix 
     {
         AffineMatrix {
             i1: array[0], j1: array[4], k1: array[8], w1: array[12],
@@ -162,7 +162,7 @@ impl AffineMatrix
         }
     }
             
-    pub fn translation(x : f64, y : f64, z : f64) -> AffineMatrix 
+    pub fn translation(x : f32, y : f32, z : f32) -> AffineMatrix 
     {
         AffineMatrix {
                 i1: 1., j1: 0., k1: 0., w1: x ,
@@ -172,7 +172,7 @@ impl AffineMatrix
             }
     }
     
-    pub fn rotation_x(theta : f64) -> AffineMatrix 
+    pub fn rotation_x(theta : f32) -> AffineMatrix 
     {
         let c = theta.cos();
         let s = theta.sin();
@@ -184,7 +184,7 @@ impl AffineMatrix
         }
     }
     
-    pub fn rotation_y(theta : f64) -> AffineMatrix 
+    pub fn rotation_y(theta : f32) -> AffineMatrix 
     {
         let c = theta.cos();
         let s = theta.sin();
@@ -196,7 +196,7 @@ impl AffineMatrix
         }
     }
 
-    pub fn rotation_z(theta : f64) -> AffineMatrix 
+    pub fn rotation_z(theta : f32) -> AffineMatrix 
     {
         let c = theta.cos();
         let s = theta.sin();
@@ -208,7 +208,7 @@ impl AffineMatrix
         }
     }
 
-    pub fn scale(x : f64, y : f64, z : f64) -> AffineMatrix 
+    pub fn scale(x : f32, y : f32, z : f32) -> AffineMatrix 
     {
         AffineMatrix {
             i1: x , j1: 0., k1: 0., w1: 0.,
@@ -218,7 +218,7 @@ impl AffineMatrix
         }
     }
     
-    pub fn uniform_scale(s : f64) -> AffineMatrix 
+    pub fn uniform_scale(s : f32) -> AffineMatrix 
     {
         AffineMatrix {
             i1: s , j1: 0., k1: 0., w1: 0.,
@@ -238,7 +238,7 @@ impl AffineMatrix
         }
     }
 
-    pub fn as_row_major_vec(&self) -> Vec<f64> 
+    pub fn as_row_major_vec(&self) -> Vec<f32> 
     {
         vec![
             self.i1, self.j1, self.k1, self.w1,
@@ -251,8 +251,8 @@ impl AffineMatrix
 
 impl Index<Cell> for AffineMatrix 
 {
-    type Output = f64;
-    fn index(&self, c : Cell) -> &f64 
+    type Output = f32;
+    fn index(&self, c : Cell) -> &f32 
     {
         match c {
             Cell::I1 => &self.i1, Cell::I2 => &self.i2, Cell::I3 => &self.i3, Cell::I4 => &self.i4, 
@@ -275,8 +275,8 @@ impl Index<Cell> for AffineMatrix
 
 impl Index<i32> for AffineMatrix 
 {
-    type Output = f64;
-    fn index(&self, c : i32) -> &f64 {
+    type Output = f32;
+    fn index(&self, c : i32) -> &f32 {
         match c {
             0 => &self.i1, 4 => &self.i2, 8 => &self.i3, 12=> &self.i4, 
             1 => &self.j1, 5 => &self.j2, 9 => &self.j3, 13=> &self.j4, 
@@ -315,12 +315,12 @@ impl Mul<Vector4> for AffineMatrix
 mod tests {    
     use ::vectors::{ Vector4, Vector3 };
     use ::matrices::{ AffineMatrix, Cell };
-    use std::f64::consts::{ PI };
+    use std::f32::consts::{ PI };
 
-    const C : f64 = 0.5403023058681398; // cos(1)
-    const S : f64 = 0.8414709848078965; // sin(1)
+    const C : f32 = 0.5403023058681398; // cos(1)
+    const S : f32 = 0.8414709848078965; // sin(1)
 
-    const TOLERANCE : f64 = 0.0000000000000000001;
+    const TOLERANCE : f32 = 0.0000000000000000001;
 
     macro_rules!  assert_aprox{
         ( $ left : expr , $ right : expr ) => (
@@ -476,8 +476,8 @@ mod tests {
                  13.,14.,15.,16.]);
 
         for i in 0..16 {
-            assert_eq!(matrix[Cell::Row(i)], (i + 1) as f64); // values increment along row major order
-            assert_eq!(matrix[Cell::Column(i)], ((i * 4 % 16) + (i / 4) + 1) as f64);
+            assert_eq!(matrix[Cell::Row(i)], (i + 1) as f32); // values increment along row major order
+            assert_eq!(matrix[Cell::Column(i)], ((i * 4 % 16) + (i / 4) + 1) as f32);
         }
     }
 
@@ -503,8 +503,8 @@ mod tests {
                  13.,14.,15.,16.]);
 
         for i in 0..16 {
-            assert_eq!(matrix[Cell::Column(i)], (i + 1) as f64); // values increment along column major order
-            assert_eq!(matrix[Cell::Row(i)], ((i * 4 % 16) + (i / 4) + 1) as f64);
+            assert_eq!(matrix[Cell::Column(i)], (i + 1) as f32); // values increment along column major order
+            assert_eq!(matrix[Cell::Row(i)], ((i * 4 % 16) + (i / 4) + 1) as f32);
         }
     }
 }

@@ -1,39 +1,44 @@
 use std::ops::{ Add, Sub, Mul, Neg };
 
+pub trait Vec3
+{
+    fn magnitude() -> f32;
+}
+
 #[derive(Debug)]
 #[derive(PartialEq)]
 #[derive(Clone)]
 #[derive(Copy)]
 pub struct Vector3
 {
-    x : f64,
-    y : f64,
-    z : f64,
+    x : f32,
+    y : f32,
+    z : f32,
 }
 
 impl Vector3 
 {
-    pub fn magnitude_squared(&self) -> f64 
+    pub fn magnitude_squared(&self) -> f32 
     {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
-    pub fn magnitude(&self) -> f64 
+    pub fn magnitude(&self) -> f32 
     {
         self.magnitude_squared().sqrt()
     }  
 
-    pub fn new(x : f64, y : f64, z : f64) -> Vector3 
+    pub fn new(x : f32, y : f32, z : f32) -> Vector3 
     {
         Vector3 { x: x, y: y, z: z }
     }
 
     pub fn newi(x : i32, y : i32, z : i32) -> Vector3 
     {
-        Vector3 { x: x as f64, y: y as f64, z: z as f64 }
+        Vector3 { x: x as f32, y: y as f32, z: z as f32 }
     }
 
-    pub fn dot(&self, v : Vector3) -> f64 
+    pub fn dot(&self, v : Vector3) -> f32 
     {
         self.x * v.x + self.y * v.y + self.z * v.z        
     }
@@ -67,7 +72,7 @@ impl Vector3
         Vector3 { x : self.x - v.x, y : self.y - v.y, z : self.z - v.z }
     }
 
-    pub fn scale(&self, s : f64) -> Vector3 
+    pub fn scale(&self, s : f32) -> Vector3 
     {
         Vector3 { x : self.x * s, y : self.y * s, z : self.z * s }
     }
@@ -77,9 +82,9 @@ impl Vector3
         Vector3 { x : self.x.round(), y : self.y.round(), z : self.z.round() }
     }
 
-    pub fn x(&self) -> f64 { self.x }
-    pub fn y(&self) -> f64 { self.y }
-    pub fn z(&self) -> f64 { self.z }
+    pub fn x(&self) -> f32 { self.x }
+    pub fn y(&self) -> f32 { self.y }
+    pub fn z(&self) -> f32 { self.z }
 
     pub fn  zero() -> Vector3 { Vector3 { x: 0., y: 0., z: 0. } }
     pub fn identity() -> Vector3 { Vector3 { x: 1., y: 1., z: 1. } }
@@ -87,9 +92,9 @@ impl Vector3
     pub fn j_hat() -> Vector3 { Vector3 { x: 0., y: 1., z: 0. } }
     pub fn k_hat() -> Vector3 { Vector3 { x: 0., y: 0., z: 1. } }
 
-    pub fn with_x(&self, x : f64) -> Vector3 { Vector3 { x: x, y: self.y, z: self.z } }
-    pub fn with_y(&self, y : f64) -> Vector3 { Vector3 { x: self.x, y: y, z: self.z } }
-    pub fn with_z(&self, z : f64) -> Vector3 { Vector3 { x: self.x, y: self.y, z: z } }
+    pub fn with_x(&self, x : f32) -> Vector3 { Vector3 { x: x, y: self.y, z: self.z } }
+    pub fn with_y(&self, y : f32) -> Vector3 { Vector3 { x: self.x, y: y, z: self.z } }
+    pub fn with_z(&self, z : f32) -> Vector3 { Vector3 { x: self.x, y: self.y, z: z } }
 }
 
 impl Add for Vector3 
@@ -110,16 +115,16 @@ impl Sub for Vector3
     }
 }
 
-impl Mul<f64> for Vector3 
+impl Mul<f32> for Vector3 
 {
     type Output = Vector3;
-    fn mul(self, s : f64) -> Vector3 
+    fn mul(self, s : f32) -> Vector3 
     {
         self.scale(s)
     }
 }
 
-impl Mul<Vector3> for f64 
+impl Mul<Vector3> for f32 
 {
     type Output = Vector3;
     fn mul(self, v : Vector3)  -> Vector3 
@@ -142,33 +147,33 @@ impl Neg for Vector3
 #[derive(Copy)]
 pub struct Vector4 
 {
-    x : f64,
-    y : f64,
-    z : f64,
-    w : f64,
+    x : f32,
+    y : f32,
+    z : f32,
+    w : f32,
 }
 
 impl Vector4 
 {
 
-    pub fn magnitude_squared(&self) -> f64 {        
+    pub fn magnitude_squared(&self) -> f32 {        
         self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
     }
 
-    pub fn magnitude(&self) -> f64 {
+    pub fn magnitude(&self) -> f32 {
         self.magnitude_squared().sqrt()
     }  
 
-    pub fn dot(&self, v: Vector4) -> f64 {
+    pub fn dot(&self, v: Vector4) -> f32 {
         self.x * v.x + self.y * v.y + self.z * v.z + self.w * v.w            
     }
 
-    pub fn new(x: f64, y: f64, z: f64, w: f64) -> Vector4 { Vector4 { x: x, y: y, z: z, w: w } }
+    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Vector4 { Vector4 { x: x, y: y, z: z, w: w } }
 
-    pub fn x(self) -> f64 { self.x }
-    pub fn y(self) -> f64 { self.y }
-    pub fn z(self) -> f64 { self.z }
-    pub fn w(self) -> f64 { self.w }
+    pub fn x(self) -> f32 { self.x }
+    pub fn y(self) -> f32 { self.y }
+    pub fn z(self) -> f32 { self.z }
+    pub fn w(self) -> f32 { self.w }
 }
 
 impl Add for Vector4 
