@@ -96,54 +96,54 @@ impl AffineMatrix
     {
         let m = self;
 
-        let sa = fvec::new(m.i1, m.i1, m.i1, m.j1) * fvec::new(m.j2, m.k2, m.w2, m.k2);
-        let sb = fvec::new(m.i2, m.i2, m.i2, m.j2) * fvec::new(m.j1, m.k1, m.w1, m.k1);
-        let sv = sa - sb;
+        // let sa = fvec::new(m.i1, m.i1, m.i1, m.j1) * fvec::new(m.j2, m.k2, m.w2, m.k2);
+        // let sb = fvec::new(m.i2, m.i2, m.i2, m.j2) * fvec::new(m.j1, m.k1, m.w1, m.k1);
+        // let sv = sa - sb;
 
-        let s0 = sv.extract(0); //m.i1 * m.j2 - m.i2 * m.j1;
-        let s1 = sv.extract(1); //m.i1 * m.k2 - m.i2 * m.k1;
-        let s2 = sv.extract(2); //m.i1 * m.w2 - m.i2 * m.w1;
-        let s3 = sv.extract(3); //m.j1 * m.k2 - m.j2 * m.k1;
+        let s0 = /* sv.extract(0); */ m.i1 * m.j2 - m.i2 * m.j1;
+        let s1 = /* sv.extract(1); */ m.i1 * m.k2 - m.i2 * m.k1;
+        let s2 = /* sv.extract(2); */ m.i1 * m.w2 - m.i2 * m.w1;
+        let s3 = /* sv.extract(3); */ m.j1 * m.k2 - m.j2 * m.k1;
 
-        let sca = fvec::new(m.j1, m.k1, m.k3, m.j3) * fvec::new(m.w2, m.w2, m.w4, m.w4);
-        let scb = fvec::new(m.j2, m.k2, m.k4, m.j4) * fvec::new(m.w1, m.w1, m.w3, m.w3);
-        let scv = sca - scb;
-        let s4 = scv.extract(0); //m.j1 * m.w2 - m.j2 * m.w1;
-        let s5 = scv.extract(1); //m.k1 * m.w2 - m.k2 * m.w1;
-        let c5 = scv.extract(2); //m.k3 * m.w4 - m.k4 * m.w3;
-        let c4 = scv.extract(3); //m.j3 * m.w4 - m.j4 * m.w3;
+        // let sca = fvec::new(m.j1, m.k1, m.k3, m.j3) * fvec::new(m.w2, m.w2, m.w4, m.w4);
+        // let scb = fvec::new(m.j2, m.k2, m.k4, m.j4) * fvec::new(m.w1, m.w1, m.w3, m.w3);
+        // let scv = sca - scb;
+        let s4 = /* scv.extract(0); */ m.j1 * m.w2 - m.j2 * m.w1;
+        let s5 = /* scv.extract(1); */ m.k1 * m.w2 - m.k2 * m.w1;
+        let c5 = /* scv.extract(2); */ m.k3 * m.w4 - m.k4 * m.w3;
+        let c4 = /* scv.extract(3); */ m.j3 * m.w4 - m.j4 * m.w3;
         
-        let ca = fvec::new(m.j3, m.i3, m.i3, m.i3) * fvec::new(m.k4, m.w4, m.k4, m.j4);
-        let cb = fvec::new(m.j4, m.i4, m.i4, m.i4) * fvec::new(m.k3, m.w3, m.k3, m.j3);
-        let cv = ca - cb;
-        let c3 = cv.extract(0); //m.j3 * m.k4 - m.j4 * m.k3;
-        let c2 = cv.extract(1); //m.i3 * m.w4 - m.i4 * m.w3;
-        let c1 = cv.extract(2); //m.i3 * m.k4 - m.i4 * m.k3;
-        let c0 = cv.extract(3); //m.i3 * m.j4 - m.i4 * m.j3;
+        // let ca = fvec::new(m.j3, m.i3, m.i3, m.i3) * fvec::new(m.k4, m.w4, m.k4, m.j4);
+        // let cb = fvec::new(m.j4, m.i4, m.i4, m.i4) * fvec::new(m.k3, m.w3, m.k3, m.j3);
+        // let cv = ca - cb;
+        let c3 = /* cv.extract(0); */ m.j3 * m.k4 - m.j4 * m.k3;
+        let c2 = /* cv.extract(1); */ m.i3 * m.w4 - m.i4 * m.w3;
+        let c1 = /* cv.extract(2); */ m.i3 * m.k4 - m.i4 * m.k3;
+        let c0 = /* cv.extract(3); */ m.i3 * m.j4 - m.i4 * m.j3;
         let d = 1.0 / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
 
-        let c1v = (fvec::new(m.j2, -m.j1, m.j4, -m.j3) * fvec::new(c5, c5, s5, s5) + fvec::new(-m.k2, m.k1, -m.k4, m.k3) * fvec::new(c4, c4, s4, s4) + fvec::new(m.w2, -m.w1, m.w4, -m.w3) * fvec::new(c3, c3, s3, s3)) * d;                
-        let c2v = (fvec::new(-m.i2, m.i1, -m.i4, m.i3) * fvec::new(c5, c5, s5, s5) + fvec::new(m.k2, -m.k1, m.k4, -m.k3) * fvec::new(c2, c2, s2, s2) + fvec::new(-m.w2, m.w1, -m.w4, m.w3) * fvec::new(c1, c1, s1, s1)) * d;
-        let c3v = (fvec::new( m.i2, -m.i1, m.i4, -m.i3) * fvec::new(c4, c4, s4, s4) + fvec::new(m.w2, -m.w1, m.w4, -m.w3) * fvec::new(c2, c2, s2, s2) + fvec::new(m.w2, -m.w1, m.w4, -m.w3) * fvec::new(c0, c0, s0, s0)) * d;
-        let c4v = (fvec::new(-m.i2, m.i1, -m.i4, m.i3) * fvec::new(c3, c3, s3, s3) + fvec::new(-m.j2, m.j1, -m.j4, m.j3) * fvec::new(c1, c1, s1, s1) + fvec::new(-m.k2, m.k1, -m.k4, m.k3) * fvec::new(c0, c0, s0, s0)) * d;
+        // let c1v = (fvec::new(m.j2, -m.j1, m.j4, -m.j3) * fvec::new(c5, c5, s5, s5) + fvec::new(-m.k2, m.k1, -m.k4, m.k3) * fvec::new(c4, c4, s4, s4) + fvec::new(m.w2, -m.w1, m.w4, -m.w3) * fvec::new(c3, c3, s3, s3)) * d;                
+        // let c2v = (fvec::new(-m.i2, m.i1, -m.i4, m.i3) * fvec::new(c5, c5, s5, s5) + fvec::new(m.k2, -m.k1, m.k4, -m.k3) * fvec::new(c2, c2, s2, s2) + fvec::new(-m.w2, m.w1, -m.w4, m.w3) * fvec::new(c1, c1, s1, s1)) * d;
+        // let c3v = (fvec::new( m.i2, -m.i1, m.i4, -m.i3) * fvec::new(c4, c4, s4, s4) + fvec::new(m.w2, -m.w1, m.w4, -m.w3) * fvec::new(c2, c2, s2, s2) + fvec::new(m.w2, -m.w1, m.w4, -m.w3) * fvec::new(c0, c0, s0, s0)) * d;
+        // let c4v = (fvec::new(-m.i2, m.i1, -m.i4, m.i3) * fvec::new(c3, c3, s3, s3) + fvec::new(-m.j2, m.j1, -m.j4, m.j3) * fvec::new(c1, c1, s1, s1) + fvec::new(-m.k2, m.k1, -m.k4, m.k3) * fvec::new(c0, c0, s0, s0)) * d;
 
         AffineMatrix {
-            i1: c1v.extract(0), //( m.j2 * c5 - m.k2 * c4 + m.w2 * c3) * d,
-            j1: c1v.extract(1), //(-m.j1 * c5 + m.k1 * c4 - m.w1 * c3) * d,
-            k1: c1v.extract(2), //( m.j4 * s5 - m.k4 * s4 + m.w4 * s3) * d,
-            w1: c1v.extract(3), //(-m.j3 * s5 + m.k3 * s4 - m.w3 * s3) * d,
-            i2: c2v.extract(0), //(-m.i2 * c5 + m.k2 * c2 - m.w2 * c1) * d,
-            j2: c2v.extract(1), //( m.i1 * c5 - m.k1 * c2 + m.w1 * c1) * d,
-            k2: c2v.extract(2), //(-m.i4 * s5 + m.k4 * s2 - m.w4 * s1) * d,
-            w2: c2v.extract(3), //( m.i3 * s5 - m.k3 * s2 + m.w3 * s1) * d,
-            i3: c3v.extract(0), //( m.i2 * c4 - m.j2 * c2 + m.w2 * c0) * d,
-            j3: c3v.extract(1), //(-m.i1 * c4 + m.j1 * c2 - m.w1 * c0) * d,
-            k3: c3v.extract(2), //( m.i4 * s4 - m.j4 * s2 + m.w4 * s0) * d,
-            w3: c3v.extract(3), //(-m.i3 * s4 + m.j3 * s2 - m.w3 * s0) * d,
-            i4: c4v.extract(0), //(-m.i2 * c3 + m.j2 * c1 - m.k2 * c0) * d,
-            j4: c4v.extract(1), //( m.i1 * c3 - m.j1 * c1 + m.k1 * c0) * d,
-            k4: c4v.extract(2), //(-m.i4 * s3 + m.j4 * s1 - m.k4 * s0) * d,
-            w4: c4v.extract(3), //( m.i3 * s3 - m.j3 * s1 + m.k3 * s0) * d,
+            i1: /* c1v.extract(0), */( m.j2 * c5 - m.k2 * c4 + m.w2 * c3) * d,
+            j1: /* c1v.extract(1), */(-m.j1 * c5 + m.k1 * c4 - m.w1 * c3) * d,
+            k1: /* c1v.extract(2), */( m.j4 * s5 - m.k4 * s4 + m.w4 * s3) * d,
+            w1: /* c1v.extract(3), */(-m.j3 * s5 + m.k3 * s4 - m.w3 * s3) * d,
+            i2: /* c2v.extract(0), */(-m.i2 * c5 + m.k2 * c2 - m.w2 * c1) * d,
+            j2: /* c2v.extract(1), */( m.i1 * c5 - m.k1 * c2 + m.w1 * c1) * d,
+            k2: /* c2v.extract(2), */(-m.i4 * s5 + m.k4 * s2 - m.w4 * s1) * d,
+            w2: /* c2v.extract(3), */( m.i3 * s5 - m.k3 * s2 + m.w3 * s1) * d,
+            i3: /* c3v.extract(0), */( m.i2 * c4 - m.j2 * c2 + m.w2 * c0) * d,
+            j3: /* c3v.extract(1), */(-m.i1 * c4 + m.j1 * c2 - m.w1 * c0) * d,
+            k3: /* c3v.extract(2), */( m.i4 * s4 - m.j4 * s2 + m.w4 * s0) * d,
+            w3: /* c3v.extract(3), */(-m.i3 * s4 + m.j3 * s2 - m.w3 * s0) * d,
+            i4: /* c4v.extract(0), */(-m.i2 * c3 + m.j2 * c1 - m.k2 * c0) * d,
+            j4: /* c4v.extract(1), */( m.i1 * c3 - m.j1 * c1 + m.k1 * c0) * d,
+            k4: /* c4v.extract(2), */(-m.i4 * s3 + m.j4 * s1 - m.k4 * s0) * d,
+            w4: /* c4v.extract(3), */( m.i3 * s3 - m.j3 * s1 + m.k3 * s0) * d,
         }
     }
 
