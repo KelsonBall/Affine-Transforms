@@ -333,7 +333,7 @@ impl Mul<fvec> for AffineMatrix
 
 #[cfg(test)]
 mod tests {
-    use ::vector3::{Vec3, Vector3};    
+    use ::vector3::{Vec3, Vector3};
     use packed_simd::f32x4 as fvec;
     use ::matrices::{ AffineMatrix, Cell };
     use std::f32::consts::{ PI };
@@ -376,8 +376,8 @@ mod tests {
                  0., 0.,-1., 1.]);
         assert_eq!(inverse, expected); // should be exact
     }
-    
-    #[test]    
+
+    #[test]
     fn inverse_rotation() {
         // create a rotation Matrix for 1 radian about the Z axis
         let rotate = AffineMatrix::rotation_z(1.);
@@ -401,11 +401,11 @@ mod tests {
     }
 
     #[bench]
-    fn inverse_benchmark(b: &mut Bencher) { 
-        let mat = AffineMatrix::rotation_z(1.123) * AffineMatrix::translation(0.2, 0.3, 12.2) * AffineMatrix::rotation_y(-2.);        
+    fn inverse_benchmark(b: &mut Bencher) {
+        let mat = AffineMatrix::rotation_z(1.123) * AffineMatrix::translation(0.2, 0.3, 12.2) * AffineMatrix::rotation_y(-2.);
         b.iter(|| {
             let mut a = mat.inverse();
-            for _ in 0..100 {
+            for _ in 0..10_000 {
                 a = mat.inverse();
             }
             a
