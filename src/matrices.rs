@@ -320,7 +320,7 @@ mod tests {
     const C : f32 = 0.5403023058681398; // cos(1)
     const S : f32 = 0.8414709848078965; // sin(1)
 
-    const TOLERANCE : f32 = 0.0000000000000000001;
+    const TOLERANCE : f32 = 0.000001;
 
     macro_rules!  assert_aprox{
         ( $ left : expr , $ right : expr ) => (

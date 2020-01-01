@@ -1,10 +1,5 @@
 use std::ops::{ Add, Sub, Mul, Neg };
 
-pub trait Vec3
-{
-    fn magnitude() -> f32;
-}
-
 #[derive(Debug)]
 #[derive(PartialEq)]
 #[derive(Clone)]
