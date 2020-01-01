@@ -315,7 +315,7 @@ impl Mul<Vector4> for AffineMatrix
 #[cfg(test)]
 mod tests {
     use ::vector3::{Vec3, Vector3};
-    use ::vector4::{Vec4, Vector4};
+    use ::vector4::Vector4;
     use ::matrices::{ AffineMatrix, Cell };
     use std::f32::consts::{ PI };
 
