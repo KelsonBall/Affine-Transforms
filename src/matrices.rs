@@ -393,7 +393,7 @@ mod tests {
         let mat = AffineMatrix::rotation_z(1.123) * AffineMatrix::translation(0.2, 0.3, 12.2) * AffineMatrix::rotation_y(-2.);
         b.iter(|| {
             let mut a = mat.inverse();
-            for _ in 0..100 {
+            for _ in 0..10_000 {
                 a = mat.inverse();
             }
             a
