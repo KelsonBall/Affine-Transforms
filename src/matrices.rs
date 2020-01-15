@@ -3,18 +3,22 @@ use ::vector3::{ Vec3, Vector3 };
 use ::vector4::Vec4;
 use packed_simd::f32x4 as fvec;
 
+/// Uniquely identifies a single scalar value of an Affine Matrix
 pub enum Cell
 {
     I1, J1, K1, W1,
     I2, J2, K2, W2,
     I3, J3, K3, W3,
     I4, J4, K4, W4,
+    /// By row-major index
     Row(u8),
+    /// By column-major index
     Column(u8),
 }
 
 impl Cell
 {
+    /// Converts any Cell identifier to column-major index
     pub fn to_column(&self) -> Cell
     {
         match self {
@@ -30,6 +34,7 @@ impl Cell
 
 #[derive(Debug)]
 #[derive(PartialEq)]
+/// A 4 dimensional matrix for representing linear transformations of 3D space
 pub struct AffineMatrix
 {
     i1 : f32, j1 : f32, k1 : f32, w1 : f32,
@@ -40,7 +45,7 @@ pub struct AffineMatrix
 
 impl AffineMatrix
 {
-    // column vector (1, 2, 3, 4)
+    /// Recieves the 1st, 2nd, 3rd, or 4th column as an SIMD vector
     pub fn cvec(&self, column : u8) -> fvec
     {
         let start = (column - 1) * 4;
@@ -51,7 +56,7 @@ impl AffineMatrix
             self[Cell::Column(start + 3)])
     }
 
-    // row vector (1, 2, 3, 4)
+    /// Recieves the 1st, 2nd, 3rd, or 4th row as an SIMD vector
     pub fn rvec(&self, row : u8) -> fvec
     {
         let start = (row - 1) * 4;
@@ -62,6 +67,7 @@ impl AffineMatrix
             self[Cell::Row(start + 3)])
     }
 
+    /// Applies matrix multiplication between this matrix and another
     pub fn multiply(&self, m : AffineMatrix) -> AffineMatrix
     {
         let c1 = self.cvec(1);
